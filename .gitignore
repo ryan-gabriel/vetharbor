@@ -1,0 +1,45 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+.vite/
+apps/web/dist/
+
+# Env and secrets — AGENTS.md §3.4: nothing secret is ever committed
+*.env
+*.env.*
+!.env.example
+*.pem
+*.key
+
+# Generated artefacts (AGENTS.md §11)
+ml/registry/**/*.bin
+ml/registry/**/*.onnx
+test-results/
+playwright-report/
+*.trace
+*.zip
+reports/*.utf8.csv
+
+# Tooling caches
+.ecc/benchmarks/.cache/
+.tmp/
+
+# NOTE: .agents/skills/, .opencode/skills/ and skills-lock.json are deliberately
+# tracked so a reviewer cloning this repo gets the identical agent toolchain.

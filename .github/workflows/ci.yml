@@ -1,0 +1,36 @@
+name: ci
+
+# M0 placeholder: SPEC.md §13 defines this milestone's bar as "CI green on an
+# empty pipeline". Real stages (lint → typecheck → unit → integration →
+# contract → security → a11y → ml → report → build → deploy) arrive per
+# TESTING.md §12. Public repo ⇒ unlimited runner minutes; no secrets in any job.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Governing documents exist
+        run: |
+          for f in AGENTS.md SPEC.md docs/ARCHITECTURE.md docs/DATA_MODEL.md \
+                   docs/DESIGN.md docs/TESTING.md docs/CONTEXT.md; do
+            test -f "$f" || { echo "missing $f" >&2; exit 1; }
+          done
+
+      - name: Locked-decision consistency pass (CONTEXT.md §7)
+        run: |
+          # The only occurrences of forbidden variants must be the prohibitions themselves.
+          if grep -rn -iE "\b384d\b|all-MiniLM-L6-v2 \(default\)|APScheduler" AGENTS.md SPEC.md docs/*.md \
+             | grep -vEi "forbidden|out;|breaks|prohibition|instead of|guard test|greps|no pollers"; then
+            echo "found an un-labelled forbidden variant above" >&2; exit 1
+          fi
+
+      - name: Empty-pipeline quality gates
+        run: make test

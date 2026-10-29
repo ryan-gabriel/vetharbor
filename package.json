@@ -1,0 +1,12 @@
+{
+  "name": "vetharbor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Root tooling manifest for the Vetharbor monorepo. App dependencies live in apps/web and apps/api. Do not add runtime dependencies here.",
+  "scripts": {
+    "skills:restore": "npx skills experimental_install"
+  },
+  "dependencies": {
+    "ecc-universal": "^2.2.3"
+  }
+}

@@ -1,0 +1,23 @@
+# One term per line. Generated synthetic output must never contain these.
+# CI asserts the corpus is clean against this list (AGENTS.md §3.2).
+# The terms below are the ones that would turn a synthetic CV into a real one.
+John Doe
+Jane Doe
+johndoe@example.com
+janedoe@example.com
++1 (555)
+555-0100
+555-0199
+Acme Corp
+Initech
+Globex
+Umbrella Corporation
+123 Main Street
+12345
+confidential
+proprietary
+internal use only
+resume of
+curriculum vitae of
+real candidate
+real applicant

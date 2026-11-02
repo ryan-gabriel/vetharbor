@@ -1,14 +1,17 @@
 name: ci
 
-# M0 placeholder: SPEC.md §13 defines this milestone's bar as "CI green on an
-# empty pipeline". Real stages (lint → typecheck → unit → integration →
-# contract → security → a11y → ml → report → build → deploy) arrive per
-# TESTING.md §12. Public repo ⇒ unlimited runner minutes; no secrets in any job.
+# M0 gate: documentation guards plus the real Python and web quality gates
+# (TESTING.md §12). No third-party credentials and no metered API calls:
+# providers are pinned to the fakes, so this workflow cannot spend quota
+# (AGENTS.md §3.5, §3.7).
 
 on:
   push:
     branches: [main]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   sanity:
@@ -32,5 +35,32 @@ jobs:
             echo "found an un-labelled forbidden variant above" >&2; exit 1
           fi
 
-      - name: Empty-pipeline quality gates
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Python dependencies
+        working-directory: apps/api
+        run: uv sync --frozen
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci --no-audit --no-fund
+
+      - name: Quality gates
         run: make test

@@ -1,20 +1,22 @@
 # Vetharbor — root Makefile
-
-# Targets are defined in AGENTS.md §7. Placeholder targets that would run code
-# which does not exist yet fail loudly; only the check targets pass empty,
-# because the M0 done-criterion is "CI green on an empty pipeline" (SPEC.md §13).
+#
+# Targets are defined in AGENTS.md §7. `make test` is the real gate: it runs
+# ruff, mypy --strict, ESLint, tsc and both test suites against real sources.
+# Run profile targets that need application code still fail loudly until the
+# milestone that implements them.
 
 SHELL := /bin/bash
 
-.PHONY: help dev seed db-reset demo-lite demo-full k8s-demo drain test lint typecheck
+.PHONY: help dev seed db-reset demo-lite demo-full k8s-demo drain test lint format typecheck
 
 help: ## list targets
 	@grep -hE '^[a-z0-9-]+:.*?## ' Makefile | awk -F':.*?## ' '{printf "  %-12s %s\n", $$1, $$2}'
 
 # ---- run profiles (SPEC.md §5) — implemented per milestone, not before ----
 
-dev: ## zero-key offline stack: Postgres+pgvector, FastAPI, React, Keycloak, Ollama [M0-task2]
-	@echo "ERROR: not implemented yet — M0 task 2 (infra/compose/dev.yaml). See docs/CONTEXT.md §4." >&2; exit 1
+dev: ## zero-key offline infrastructure: Postgres 16 + pgvector on :55432
+	docker compose -f infra/compose/dev.yaml up -d
+	@echo "Postgres ready on localhost:55432. Start the API and web apps with the commands in apps/*/README.md."
 
 seed: ## seed two synthetic tenants + 200 generated CVs [M0-task3 / M1]
 	@echo "ERROR: not implemented yet — M0 task 3 (scripts/generate_synthetic_corpus.py)." >&2; exit 1
@@ -36,12 +38,20 @@ drain: ## one bounded outbox drain pass (ARCHITECTURE.md §6) [M2]
 
 # ---- quality gates (TESTING.md §14) ----
 
-lint: ## ruff + eslint (placeholders until sources exist)
-	@echo "lint: no sources yet — empty pipeline passes (M0 criterion)."
+lint: ## ruff + ruff format check + eslint + prettier check
+	cd apps/api && uv run ruff check .
+	cd apps/api && uv run ruff format --check .
+	cd apps/web && npm run lint
+	cd apps/web && npm run format
 
-typecheck: ## mypy --strict + tsc --noEmit (placeholders until sources exist)
-	@echo "typecheck: no sources yet — empty pipeline passes (M0 criterion)."
+format: ## auto-format both apps
+	cd apps/api && uv run ruff format .
+	cd apps/web && npm run format:write
 
-test: lint typecheck ## make test = lint + typecheck + unit + integration + security + ml
-	@echo "unit/integration/security/ml: no tests yet — empty pipeline passes (M0 criterion)."
-	@echo "WARNING: the first real milestone must add tests before this target means anything (AGENTS.md §12)."
+typecheck: ## mypy --strict + tsc --noEmit
+	cd apps/api && uv run mypy
+	cd apps/web && npm run typecheck
+
+test: lint typecheck ## lint + typecheck + unit/security suites
+	cd apps/api && uv run pytest
+	cd apps/web && npm test

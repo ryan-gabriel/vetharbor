@@ -65,6 +65,7 @@ Rules:
 - Status is never conveyed by colour alone: every badge pairs colour with a word and an icon.
 - Contrast minimum 4.5:1 for body text, 3:1 for large text and UI parts, measured on the tokens above (`--ink-muted` on `--surface-canvas` is the tightest pairing and must be tested as an explicit case in CI).
 - Semantic tokens only in components. `bg-accent`, not `bg-[#1C4ED8]`.
+- Implementation naming: shadcn/ui reserves `--accent` for its subtle hover slot, so the brand blue is exposed as `--accent-brand` and the `*-brand` utilities; shadcn's `--accent` maps to `--accent-soft`. This is the only permitted alias, and it is defined once in `apps/web/src/styles/tokens.css`.
 
 ### 3.2 Typography
 

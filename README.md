@@ -3,9 +3,13 @@
 Document screening with AI guardrails, event-driven ingestion, and a pragmatic zero-trust layer —
 built to run at $0. *Vet* (screen carefully) + *harbor* (untrusted documents are inspected before they come ashore).
 
-**Status: M0 foundations, documentation complete, code not started.** This repository currently contains the
-governing documents; there is no running application yet. When the demo exists it will be linked here, with a
-3-minute recording and a `make dev` offline path (SPEC.md §5).
+**Status: M0 foundations in progress.** The API scaffold (health route, typed errors, provider
+fakes, RLS helpers, guard tests) and the web shell are in place and covered by tests; the database
+schema, upload pipeline and public demo arrive in M1. Nothing is deployed yet.
+
+`make test` runs the real gates: `ruff`, `mypy --strict`, ESLint, `tsc` and both test suites. The
+offline Postgres+pgvector stack comes up with `make dev`; run the apps with the commands in
+`apps/api/README.md` and `apps/web/README.md`.
 
 ## Read this first
 
@@ -29,4 +33,4 @@ governing documents; there is no running application yet. When the demo exists i
 - **If it can't be linked, it isn't claimed.** Every course and architecture claim points at a commit,
   test, ADR, or recording.
 
-MIT-licensed (license file arrives with the public repo in M0).
+MIT-licensed — see [LICENSE](LICENSE).

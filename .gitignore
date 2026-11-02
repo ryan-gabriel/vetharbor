@@ -31,6 +31,7 @@ apps/web/dist/
 # Generated artefacts (AGENTS.md §11)
 ml/registry/**/*.bin
 ml/registry/**/*.onnx
+scripts/generated/
 test-results/
 playwright-report/
 *.trace

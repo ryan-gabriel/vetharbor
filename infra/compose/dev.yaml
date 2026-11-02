@@ -1,0 +1,29 @@
+# Zero-key local infrastructure for `make dev` / tests (AGENTS.md §7).
+# Postgres 16 + pgvector is the only service M0 needs. Ollama and Keycloak
+# arrive with the milestones that use them (M4 and M3 respectively) so the
+# offline start stays small; see docs/CONTEXT.md §5.
+#
+# The credentials below are local-development defaults, not secrets.
+
+name: vetharbor
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: vetharbor
+      POSTGRES_PASSWORD: vetharbor
+      POSTGRES_DB: vetharbor
+    ports:
+      - "55432:5432"
+    volumes:
+      - vetharbor-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vetharbor -d vetharbor"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  vetharbor-postgres:

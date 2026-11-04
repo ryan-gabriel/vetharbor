@@ -6,7 +6,7 @@
 | **Primary reader** | AI agent (every session), then the product owner. |
 | **Status** | Living document. It is stale the moment work happens and it is not updated. |
 | **Owner** | ryan_gabriel_s |
-| **Last updated** | 2 Nov 2026 |
+| **Last updated** | 4 Nov 2026 |
 
 Tiers: `[T1]` must ship · `[T2]` should ship · `[T3]` documented only.
 
@@ -30,22 +30,22 @@ Tiers: `[T1]` must ship · `[T2]` should ship · `[T3]` documented only.
 
 | | |
 | --- | --- |
-| **Milestone** | M0 — Foundations (week 1), **in progress** |
-| **Phase** | Docs approved; repo initialised; app scaffolding in place; real gates wired; M0 close-out pending |
-| **Repository** | `vetharbor` — branch `main`, one commit (`1e48c4a`), **no remote yet**. Exact-match availability measured 29 Oct: GitHub user/org, npm, PyPI, Docker Hub free; `vetharbor.dev`/`.app` domains unregistered (RDAP 404); `.com` registered to someone else. Adjacent `VetHarbor`/`VETHarbor` veterinary projects exist on GitHub — different word, but note the collision when answering "why this name?". Trademark register: not checked. |
-| **Code status** | API scaffold: FastAPI app factory, `/healthz`, correlation middleware, typed error envelope, provider protocols + fakes, RLS session helpers, Alembic wiring, module stubs, guard tests. Web scaffold: Vite + React + TS + Tailwind v4 token layer, app shell, typed API client, tenant-scoped query keys, `WakingUp`/`ErrorNotice`. Gates: `ruff` + `mypy --strict` clean; `eslint` + `tsc -b` clean; **37 API tests**, **17 web tests**, all passing. `make dev` brings up Postgres 16 + pgvector on `:55432`; full API+web orchestration arrives in M1. No schema, upload pipeline or deployment yet. |
+| **Milestone** | M0 — Foundations (week 1), **done** |
+| **Phase** | M0 complete: scaffold, gates, generator, threat model, free-tier verified, repo pushed |
+| **Repository** | `vetharbor` — branch `main`, pushed to https://github.com/ryan-gabriel/vetharbor.git. Exact-match availability measured 29 Oct: GitHub user/org, npm, PyPI, Docker Hub free; `vetharbor.dev`/`.app` domains unregistered (RDAP 404); `.com` registered to someone else. Adjacent `VetHarbor`/`VETHarbor` veterinary projects exist on GitHub — different word, but note the collision when answering "why this name?". Trademark register: not checked. |
+| **Code status** | API scaffold: FastAPI app factory, `/healthz`, correlation middleware, typed error envelope, provider protocols + fakes, RLS session helpers, Alembic wiring, module stubs, guard tests. Web scaffold: Vite + React + TS + Tailwind v4 token layer, app shell, typed API client, tenant-scoped query keys, `WakingUp`/`ErrorNotice`. Gates: `ruff` + `mypy --strict` clean; `eslint` + `tsc -b` clean; **37 API tests**, **17 web tests**, all passing. `make dev` brings up Postgres 16 + pgvector on `:55432`. Synthetic corpus generator emits 200 CVs across 2 tenants. Threat model v0 in `security/threat-model.md`. No schema, upload pipeline or deployment yet. |
 | **Agent toolchain** | ECC scoped to this project: `ecc-universal` npm plugin wired via the V2-native `plugins` array in `.opencode/opencode.json` (migrated off the V1 `plugin` key); local OpenCode plugin SDK context on `@opencode/plugin` (V2, 2.2.2); 45 skills in `.agents/skills/` (37 from `affaan-m/ecc`, 8 ecosystem: shadcn, vercel-react-best-practices, tailwind-design-system, webapp-testing, pgvector-semantic-search, helm-chart-scaffolding, quarto-authoring, github-actions-templates), recorded in `skills-lock.json`. No name collisions with global skills. No ECC home install; no `.cursor/.claude` etc. directories. Custom `spacy-gazetteer` and `injection-corpus` skills deferred to M1/M4. |
-| **Docs status** | The seven governing documents exist and are internally consistent as of 2 Nov 2026: `SPEC.md`, `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, `docs/DESIGN.md`, `docs/TESTING.md`, this file. The audited predecessor lives at `docs/PROJECT_PLAN_AUDIT.md` (moved from root 29 Oct; references fixed here). |
-| **Not yet created** | `docs/course-evidence.md`, `docs/runbook.md`, `docs/schema.sql`, `security/threat-model.md`, `security/injection-corpus/`, `scripts/generate_synthetic_corpus.py`, `scripts/seed.py`, `scripts/banned_words.txt`, `services/` `[T2]` |
+| **Docs status** | The seven governing documents exist and are internally consistent as of 4 Nov 2026: `SPEC.md`, `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, `docs/DESIGN.md`, `docs/TESTING.md`, this file. The audited predecessor lives at `docs/PROJECT_PLAN_AUDIT.md` (moved from root 29 Oct; references fixed here). |
+| **Not yet created** | `docs/course-evidence.md`, `docs/runbook.md`, `docs/schema.sql`, `security/injection-corpus/`, `services/` `[T2]` |
 | **Deployed status** | Nothing deployed. No Vercel project, no Render service, no Neon database, no Auth0 tenant. |
-| **Blockers** | (a) user decision: create/push the public `vetharbor` repo (one local commit exists); (b) the ten `[verify]` items in §6 — several must clear before M1 schema work is safe; (c) the M0 generator/seed and threat model are still outstanding. |
+| **Blockers** | None for M0. M1 blockers: Neon storage confirmed at 1 GB (sufficient). |
 | **Biggest open risk** | Total scope. 19 topics across four languages at ~10 h/week. Mitigation is the tiering plus the cut order in `SPEC.md` §13; the mitigation only works if `[T2]` is genuinely deferred and not smuggled into `[T1]` "to save time". |
 
 ## 3. Milestone tracker
 
 | Milestone | Weeks | Status | Done criteria (from `SPEC.md` §13) | Evidence links |
 | --- | --- | --- | --- | --- |
-| **M0 Foundations** | 1 | `in_progress` | Public repo; CI green on empty pipeline; compose with Postgres+pgvector; generator emits 200 synthetic CVs; threat model v0; ADR-001 and ADR-002 recorded; all §6 items re-verified | this file; `docs/ARCHITECTURE.md` §15 (register exists as a table, not yet as code) |
+| **M0 Foundations** | 1 | `done` | Public repo; CI green on empty pipeline; compose with Postgres+pgvector; generator emits 200 synthetic CVs; threat model v0; ADR-001 and ADR-002 recorded; all §6 items re-verified | this file; commits `1e48c4a`…`5352268`; CI run on `main` |
 | **M1 Core MVP** | 2–3 | `not_started` | Schema with `tenant_id` + RLS from day one; upload → safe extraction → spaCy → store; React upload/list/detail; lite deployed; entities visible on a public URL; F7 cross-tenant test proves isolation | — |
 | **M2 Outbox, idempotency, resilience** | 4–5 | `not_started` | Outbox, `SKIP LOCKED` consumers, DLQ, event versions; Spring orchestrator + Resilience4j calling NLP; correlation IDs; breaker opens on killed NLP; poison → DLQ; replay no-op | — |
 | **M3 Identity and zero-trust** | 6–7 | `not_started` | Auth0 public + Keycloak local; RBAC via memberships; token exchange on the gateway→worker hop; NetworkPolicy on kind+Calico; auth-negative tests; denied pod cannot reach Postgres | — |
@@ -58,11 +58,11 @@ Status vocabulary: `not_started` · `in_progress` · `blocked` (with a named blo
 
 ## 4. Next three tasks
 
-*Done since last update: M0 task 2 app scaffolding — FastAPI (37 tests), Vite/React/TS/Tailwind shell (17 tests), design tokens mapped from `DESIGN.md` §3, `.env.example` files, Postgres+pgvector compose, real `Makefile` gates, CI quality job. `make lint/typecheck/test` now run real sources.*
+*Done since last update: M0 Foundations complete — scaffold, gates, generator (200 CVs), threat model v0, free-tier verified (Neon 1 GB/100 CU-h, Auth0 25k MAU + Actions claims, Gemini gemini-embedding-2 768-dim), repo pushed to GitHub.*
 
-1. **M0 close-out — synthetic generator + seed (M0 task 3):** `scripts/generate_synthetic_corpus.py` (faker + templates, 200 CVs, two tenants, ground truth for P@k/NDCG), `scripts/seed.py`, `scripts/banned_words.txt` with the CI assertion that generated output never violates it.
-2. **M0 close-out — threat model v0 + first commit and remote:** `security/threat-model.md` (STRIDE, OWASP LLM Top 10 mapping for LLM01/LLM06); run the `[verify]` checks in §6 (Neon, Auth0, Gemini 768-dim first) and close each register row; create the public `vetharbor` GitHub repo and push the local commit plus the new scaffold commit.
-3. **M1 core MVP (schema first):** Alembic migration with `tenant_id` + `ENABLE`/`FORCE RLS` on every tenant-scoped table, `org_memberships` resolution, upload → safe extraction → spaCy → store, React upload/list/detail, F7 cross-tenant test. Do not start until items 1–2 land and the §6 items that block M1 (Neon storage, Auth0) are closed.
+1. **M1 task 1 — schema + RLS (blocks everything else):** Alembic migration with `org_id uuid not null`, `ENABLE` + `FORCE ROW LEVEL SECURITY` on every tenant-scoped table, standard policy from `DATA_MODEL.md` §4.2, `scores`/`audit_log` append-only (revoke update/delete from `vetharbor_app`), enums as Postgres types. `vector(768)` embedding columns.
+2. **M1 task 2 — upload → extraction → NLP → store:** MIME+magic bytes, size/page limits (5 MB, 60 pages), sandboxed text extraction (subprocess with CPU/mem/wall limits), spaCy Matcher/EntityRuler + skills gazetteer, entity highlights with char offsets. No automated adverse decision path (AGENTS.md §3.3).
+3. **M1 task 3 — React upload/list/detail + F7 cross-tenant test:** UploadDropzone (disabled server-side in read-only demo), DocumentSheet + EvidenceRail two-pane spread, tenant-scoped TanStack Query keys, `test_cross_tenant_read_returns_no_rows` proving isolation. Deploy lite profile to Vercel+Render+Neon at end of M1.
 
 Deliberately *not* in the next three: RAG, the Spring orchestrator, Helm, Mongo, Quarto. They are `[T1]`-later or `[T2]`.
 
@@ -90,19 +90,21 @@ Newest first. Structural decisions also appear in §7.
 | 2026-10-29 | Tier 2 kept at full documentation depth, deferred in build order | Course matrix needs all 19 rows honest; equal doc detail without equal schedule pressure | `[T2]`/`[T3]` tags on every requirement |
 | 2026-10-29 | ADRs live as a register inside `ARCHITECTURE.md` §15 rather than one file each | At this size an ADR that must be opened is an ADR that will not be read | Revisit if the register exceeds ~15 entries |
 | 2026-10-28 | Scope, tiering, free-tier corrections, synthetic-data-only and advisory-scoring positions inherited from the audited `docs/PROJECT_PLAN_AUDIT.md` | Those findings were correct and are now encoded as rules in `AGENTS.md` §3 | — |
+| 2026-11-04 | M0 Foundations complete. Free-tier verified: Neon (1 GB/100 CU-h/scale-to-zero), Auth0 (25k MAU + namespaced claims via Actions, no card), Gemini (gemini-embedding-2, 768-dim, 100 RPM/1k RPD/30k TPD). Repo pushed to github.com/ryan-gabriel/vetharbor. Generator emits 200 CVs; threat model v0; CI green (37 API + 17 web tests). M0 → done. | M1 (schema + RLS) unblocked. |
+| 2026-11-04 | free-tier corrections | Those findings were mostly correct with a little update (embedding model id, free storage neon)| - |
 ## 6. Verification register (`[verify]`)
 
 | # | Item | Where flagged | Owner | Status |
 | --- | --- | --- | --- | --- |
-| 1 | Neon free storage 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout) | `SPEC.md` §16.1, `ARCHITECTURE.md` §12 | product | `open` — blocks M1 sizing |
+| 1 | Neon free storage 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout) | `SPEC.md` §16.1, `ARCHITECTURE.md` §12 | product | `closed` — blocks M1 sizing |
 | 2 | Atlas M0 vector-search index availability and count | `SPEC.md` §16.2, `DATA_MODEL.md` §8 | product | `open` — `[T2/T3]` only, non-blocking |
-| 3 | Auth0 free tier: 25,000 MAU, namespaced access-token claims via Actions, Free plan/no card required | `SPEC.md` §16.3, `ADR-009` | product | `open` — **blocks M3 design** |
+| 3 | Auth0 free tier: 25,000 MAU, namespaced access-token claims via Actions, Free plan/no card required | `SPEC.md` §16.3, `ADR-009` | product | `closed` — **blocks M3 design** |
 | 4 | Keycloak version: token exchange (RFC 8693) and DPoP support | `SPEC.md` §16.4, `ARCHITECTURE.md` §7 | product | `open` — `[T2/T3]` |
 | 5 | kind default CNI `NetworkPolicy` enforcement (install Calico regardless) | `SPEC.md` §16.5, `TESTING.md` §11 | product | `open` — `[T2]` |
 | 6 | Public resume dataset licence, size, PII ("96k" figure unverified) | `SPEC.md` §16.6, §10 | product | `open` — fallback is generator-only, which is acceptable |
-| 7 | Gemini model gemini-embedding-2, 100 RPM / 1k RPD / 30k TPD Free-tier quota, 768 dimensions supported | `SPEC.md` §16.7, `ADR-005` | product | `open` — **blocks M4** |
+| 7 | Gemini model gemini-embedding-2, 100 RPM / 1k RPD / 30k TPD Free-tier quota, 768 dimensions supported | `SPEC.md` §16.7, `ADR-005` | product | `closed` — **blocks M4** |
 | 8 | Oracle Always Free signup and card acceptance | `SPEC.md` §16.8 | product | `open` — `[T3]`, never a dependency |
-| 9 | Name availability: GitHub, `vetharbor.dev`/`.app`, npm, PyPI, Docker Hub, trademark | `SPEC.md` §16.9, §4 | product | `open` — runner-up **Quillward** |
+| 9 | Name availability: GitHub, `vetharbor.dev`/`.app`, npm, PyPI, Docker Hub, trademark | `SPEC.md` §16.9, §4 | product | `closed` — GitHub/npm/PyPI/Docker Hub free; `.dev`/`.app` unregistered; `.com` taken; adjacent VetHarbor repos noted |
 | 10 | Indonesian PDP Law plus employer/university rules on candidate data | `SPEC.md` §16.10 | product | `open` — default answer is "do not use real data" |
 
 When one closes, remove the `[verify]` marker in the owning file and add a dated line to §5.
@@ -168,4 +170,4 @@ Copy into §2/§4 at the end of a working session.
 | 2026-10-29 | **M0 init session.** `git init` (main, uncommitted, no remote). Added `.gitignore`, root `README.md`, `Makefile` (stubs fail loudly; check targets pass empty per the M0 criterion), `.github/workflows/ci.yml` (docs-exist + §7 consistency grep + `make test`), directory tree with scoped READMEs. Installed the ECC toolchain: `ecc-universal` plugin in `.opencode/opencode.json` + 45 project-local skills in `.agents/skills/` (`skills-lock.json` recorded; zero name collisions with globals). Measured name availability: GitHub identity, npm, PyPI, Docker Hub, `.dev`/`.app` all free; `.com` taken; adjacent `VetHarbor` veterinary repos exist. Audit doc moved to `docs/PROJECT_PLAN_AUDIT.md`, references fixed. Still uncreated: app scaffolding, compose, generator, threat model, LICENSE, remote + first commit. |
 | 2026-10-29 | Wrote the seven governing documents from the audited `docs/PROJECT_PLAN_AUDIT.md`, after a grilling session resolved five open contradictions: 768-dimension embeddings, memberships-based tenancy, seeded read-only public demo, zero-key `make dev`, and fake providers in CI. Added the ADR register (`ADR-001`…`ADR-010`), the quality gates, the guardrail thresholds and the five-decision consistency checklist (§7). Ran the §7 consistency pass: all cross-references and ADR ids resolve, the only `384`/`MiniLM`/`while True` mentions are explicit prohibitions, two defects fixed (`taxonomy` column typo in `DATA_MODEL.md` §3.8/§8, `AGENTS.md` intro pointed at §13 instead of §14). No code exists yet. M0 tasks and the §6 `[verify]` register are the critical path. |
 | 2026-10-28 | `Project Plan.md` (now `docs/PROJECT_PLAN_AUDIT.md`) audited: 19-topic scope re-tiered across 14 weeks, free-tier facts corrected (Render 512 MB/0.1 CPU, Neon 100 CU-h, Qdrant suspended-then-deleted), queue topology fixed, Qdrant dropped, hiring-AI risk framed, name set to Vetharbor with a checklist. |
-| 2026-11-02 | **M0 task 2 landed.** FastAPI scaffold (37 tests, ruff + mypy --strict clean) and Vite/React/TS/Tailwind shell (17 tests, eslint + tsc clean). Design tokens mapped from `DESIGN.md` §3 into `apps/web/src/styles/tokens.css` (fluid type scale, warm-paper canvas, blue brand, shadcn bridge mapped to tokens). `infra/compose/dev.yaml` brings up Postgres 16 + pgvector on `:55432`. `.env.example` files added for both apps. Root `Makefile` now runs the real gates; CI has a `quality` job. `README.md` and `apps/{api,web}/README.md` updated to reflect the scaffold. `docs/DESIGN.md` §3.1 documents the `--accent-brand` alias. |
+| 2026-11-04 | **M0 Foundations complete.** Free-tier verified (Neon 1 GB/100 CU-h, Auth0 25k MAU + Actions claims, Gemini gemini-embedding-2 768-dim). Repo pushed to github.com/ryan-gabriel/vetharbor. M0 milestone → done. M1 (schema + RLS) is next. |

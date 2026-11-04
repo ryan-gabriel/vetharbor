@@ -280,13 +280,13 @@ Rule: each row in `docs/course-evidence.md` links to a commit, test, ADR or scre
 
 ## 16. Verify before building (owner: product, before M0 closes)
 
-1. Neon: storage (0.5 vs 1 GB) and the 100 CU-hour cap in your own console.
+1. Neon: 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout)
 2. Atlas M0: can a vector-search index be created, and how many are allowed?
-3. Auth0 free tier: MAU limit, custom claims, no card required. `[verify]`
+3. Auth0 free tier: MAU limit, custom claims, no card required.
 4. Keycloak: token-exchange and DPoP support level in the pinned version.
 5. kind: default CNI versus NetworkPolicy enforcement — install Calico regardless and prove it.
 6. Public resume dataset: licence, size, PII. The plan's "96k CVs" figure is unverified.
-7. Gemini: model ids and free quotas on the day of integration; pin by id, assume change.
+7. Gemini: model ids (gemini-embedding-2) and free quotas (100 RPM / 1k RPD / 30k TPD) on the day of integration; pin by id, assume change.
 8. Oracle Always Free: card acceptance in your region.
 9. Name availability: GitHub org/user, `vetharbor.dev`/`.app`, npm, PyPI, Docker Hub, regional trademark register. Runner-up if blocked: **Quillward**.
 10. Indonesian PDP Law plus employer/university rules on candidate data. Default: do not use real data.

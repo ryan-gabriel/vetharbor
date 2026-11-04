@@ -209,7 +209,7 @@ Rules: no fetch in components — every call goes through `lib/api`, which injec
 | --- | --- | --- |
 | Vercel Hobby | Personal, non-commercial | Static SPA only. No server functions holding state. |
 | Render free | 512 MB / 0.1 CPU, 750 h pooled, idle 15 min, ~60 s wake, ephemeral disk | One service. No torch. No files. Cold-start state in the UI. |
-| Neon free | 100 CU-h, 0.5 GB (1 GB reported `[verify]`), scale-to-zero after 5 min | Never poll. Pooled connections. Extracted text only. |
+| Neon free | 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout) | Never poll. Pooled connections. Extracted text only. |
 | GitHub Actions | Public repos unlimited; private 2,000 min | Repo is public; no secrets in code; no CI quota spend on external AI. |
 | Auth0 free | MAU cap and custom claims `[verify]` | Identity only; roles stay in the database. |
 | Gemini free | Volatile quotas; prompts may train products | Synthetic text only; behind an interface; absent from CI. |

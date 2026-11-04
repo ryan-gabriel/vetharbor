@@ -94,13 +94,13 @@ Newest first. Structural decisions also appear in §7.
 
 | # | Item | Where flagged | Owner | Status |
 | --- | --- | --- | --- | --- |
-| 1 | Neon free storage 0.5 GB vs 1 GB and the 100 CU-hour cap | `SPEC.md` §16.1, `ARCHITECTURE.md` §12 | product | `open` — blocks M1 sizing |
+| 1 | Neon free storage 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout) | `SPEC.md` §16.1, `ARCHITECTURE.md` §12 | product | `open` — blocks M1 sizing |
 | 2 | Atlas M0 vector-search index availability and count | `SPEC.md` §16.2, `DATA_MODEL.md` §8 | product | `open` — `[T2/T3]` only, non-blocking |
-| 3 | Auth0 free tier: MAU cap, custom claims, no card | `SPEC.md` §16.3, `ADR-009` | product | `open` — **blocks M3 design** |
+| 3 | Auth0 free tier: 25,000 MAU, namespaced access-token claims via Actions, Free plan/no card required | `SPEC.md` §16.3, `ADR-009` | product | `open` — **blocks M3 design** |
 | 4 | Keycloak version: token exchange (RFC 8693) and DPoP support | `SPEC.md` §16.4, `ARCHITECTURE.md` §7 | product | `open` — `[T2/T3]` |
 | 5 | kind default CNI `NetworkPolicy` enforcement (install Calico regardless) | `SPEC.md` §16.5, `TESTING.md` §11 | product | `open` — `[T2]` |
 | 6 | Public resume dataset licence, size, PII ("96k" figure unverified) | `SPEC.md` §16.6, §10 | product | `open` — fallback is generator-only, which is acceptable |
-| 7 | Gemini model ids, free quotas, `output_dimensionality=768` support | `SPEC.md` §16.7, `ADR-005` | product | `open` — **blocks M4** |
+| 7 | Gemini model gemini-embedding-2, 100 RPM / 1k RPD / 30k TPD Free-tier quota, 768 dimensions supported | `SPEC.md` §16.7, `ADR-005` | product | `open` — **blocks M4** |
 | 8 | Oracle Always Free signup and card acceptance | `SPEC.md` §16.8 | product | `open` — `[T3]`, never a dependency |
 | 9 | Name availability: GitHub, `vetharbor.dev`/`.app`, npm, PyPI, Docker Hub, trademark | `SPEC.md` §16.9, §4 | product | `open` — runner-up **Quillward** |
 | 10 | Indonesian PDP Law plus employer/university rules on candidate data | `SPEC.md` §16.10 | product | `open` — default answer is "do not use real data" |

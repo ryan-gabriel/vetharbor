@@ -211,7 +211,7 @@ Rules: no fetch in components — every call goes through `lib/api`, which injec
 | Render free | 512 MB / 0.1 CPU, 750 h pooled, idle 15 min, ~60 s wake, ephemeral disk | One service. No torch. No files. Cold-start state in the UI. |
 | Neon free | 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout) | Never poll. Pooled connections. Extracted text only. |
 | GitHub Actions | Public repos unlimited; private 2,000 min | Repo is public; no secrets in code; no CI quota spend on external AI. |
-| Auth0 free | MAU cap and custom claims `[verify]` | Identity only; roles stay in the database. |
+| Auth0 free | 25,000 MAU, namespaced access-token claims via Actions, no card required | Identity only; roles stay in the database. |
 | Gemini free | Volatile quotas; prompts may train products | Synthetic text only; behind an interface; absent from CI. |
 | Upstash QStash | 1,000 msg/day, 1 MB | `[T3]` adapter only. |
 | Atlas M0 | 512 MB shared | `[T2]` profile store; `[T3]` vector experiment. |
@@ -272,7 +272,7 @@ Kept in this file rather than a directory: at this project size, an ADR that mus
 | **ADR-006** | Tenancy resolved from `org_memberships`, never from a JWT claim | Accepted. Claims would pin a user to one org and make invites require re-authentication. Consequence: one extra query per request, cached, and the honest story that roles are data, not tokens. |
 | **ADR-007** | Zero-trust applied only across real boundaries | Accepted. Token ceremony between modules in one process is theatre. Consequence: an ADR-level statement of what remains unproven, which is more credible than claiming full zero-trust. |
 | **ADR-008** | Store extracted text and metadata; never raw files | Accepted. Ephemeral disk and PII minimisation point the same way. Consequence: re-parsing an old document requires the source to be re-uploaded; stated in the runbook. |
-| **ADR-009** | IdP-agnostic OIDC: Auth0 public, Keycloak local/dev | Accepted. Keycloak needs about 1 GB RAM and cannot run on Render free. Consequence: only standard claims and JWKS are used, so the swap is configuration; `[verify]` the Auth0 tier. |
+| **ADR-009** | IdP-agnostic OIDC: Auth0 public, Keycloak local/dev | Accepted. Keycloak needs about 1 GB RAM and cannot run on Render free. Consequence: only standard claims and JWKS are used, so the swap is configuration; Auth0 tier confirmed (25,000 MAU, namespaced claims via Actions, no card). |
 | **ADR-010** | Synthetic data only; every score advisory; no automated adverse decision | Accepted. Hiring scoring is high-risk AI use under the EU AI Act and involves personal data under Indonesia's PDP Law. Consequence: the demo cannot show real-world recall on real CVs, and the README says so. |
 
 ## 16. `[T3]` appendix — architecture sketches

@@ -3,9 +3,9 @@
 Document screening with AI guardrails, event-driven ingestion, and a pragmatic zero-trust layer —
 built to run at $0. *Vet* (screen carefully) + *harbor* (untrusted documents are inspected before they come ashore).
 
-**Status: M0 foundations in progress.** The API scaffold (health route, typed errors, provider
-fakes, RLS helpers, guard tests) and the web shell are in place and covered by tests; the database
-schema, upload pipeline and public demo arrive in M1. Nothing is deployed yet.
+**Status: M0 foundations complete.** The API scaffold (health route, typed errors, provider
+fakes, RLS helpers, guard tests) and the web shell are in place and covered by 54 tests;
+the database schema, upload pipeline and public demo arrive in M1. Nothing is deployed yet.
 
 `make test` runs the real gates: `ruff`, `mypy --strict`, ESLint, `tsc` and both test suites. The
 offline Postgres+pgvector stack comes up with `make dev`; run the apps with the commands in

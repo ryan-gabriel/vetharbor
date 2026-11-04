@@ -248,7 +248,7 @@ Rule: each row in `docs/course-evidence.md` links to a commit, test, ADR or scre
 
 | Milestone | Weeks | Done when |
 | --- | --- | --- |
-| **M0 Foundations** | 1 | Public repo named `vetharbor`; CI green on an empty pipeline; compose file brings up Postgres+pgvector; generator emits 200 synthetic CVs; threat model v0; `ADR-001`, `ADR-002`; all `[verify]` items in §16 re-checked in vendor consoles. |
+| **M0 Foundations** | 1 | Public repo named `vetharbor`; CI green on real sources (ruff, mypy --strict, eslint, tsc, 54 tests); compose file brings up Postgres+pgvector; generator emits 200 synthetic CVs; threat model v0; `ADR-001`, `ADR-002`; all blocking `[verify]` items re-checked in vendor consoles. |
 | **M1 Core MVP** | 2–3 | Schema with `tenant_id` + RLS from day one; upload → safe extraction → spaCy → store; React upload/list/detail; lite deployed; public URL shows entities for a synthetic CV; F7 test proves cross-tenant reads fail. |
 | **M2 Outbox, idempotency, resilience** | 4–5 | Outbox table, `SKIP LOCKED` consumers, DLQ, event versions; Spring orchestrator with Resilience4j calling NLP; correlation IDs end to end; killing NLP opens the breaker; poison message lands in DLQ; reprocess is a no-op. |
 | **M3 Identity and zero-trust** | 6–7 | Auth0 public + Keycloak local, RBAC via memberships, token exchange for the gateway→worker hop, NetworkPolicy on kind with Calico; wrong-audience, expired and replayed tokens rejected in tests; a denied pod cannot reach Postgres. |
@@ -278,7 +278,7 @@ Rule: each row in `docs/course-evidence.md` links to a commit, test, ADR or scre
 5. Free-tier cold starts make first interaction slow; the UI says so instead of pinging the service awake.
 6. English-only NLP; Indonesian is future work.
 
-## 16. Verify before building (owner: product, before M0 closes)
+## 16. Verify before building (owner: product; M0 items closed, M1/M3 items remain)
 
 1. Neon: 1 GB, 100 CU-h, scale-to-zero on (5-min idle timeout)
 2. Atlas M0: can a vector-search index be created, and how many are allowed?

@@ -50,6 +50,10 @@ For current state, locked decisions and the verification register, see `CONTEXT.
 
 ---
 
+## In progress
+
+- M1-1 — Schema + RLS: Alembic migrations 0001–0005 committed; schema/RLS/integration tests added; CI integration job added. Not yet: local CI-style integration run against real Postgres (Docker unavailable on this host right now), `docs/schema.sql` snapshot.
+
 ## What to do next (M1 Core MVP)
 
 ### Task 1 — Schema + RLS (blocks everything else)

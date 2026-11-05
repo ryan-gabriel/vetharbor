@@ -64,3 +64,38 @@ jobs:
 
       - name: Quality gates
         run: make test
+
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: vetharbor
+          POSTGRES_PASSWORD: vetharbor
+          POSTGRES_DB: vetharbor
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U vetharbor -d vetharbor"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+
+      - name: Install Python dependencies
+        working-directory: apps/api
+        run: uv sync --frozen
+
+      - name: Run integration tests against real Postgres
+        working-directory: apps/api
+        env:
+          VETHARBOR_DATABASE_URL: postgresql+psycopg://vetharbor:vetharbor@postgres:5432/vetharbor
+        run: uv run pytest -m integration

@@ -15,6 +15,8 @@ import {
 
 const ORG_ID = 'org-harbor'; // TODO: resolve from auth context in M3
 
+const TERMINAL_STATUSES = new Set(['ready', 'failed', 'rejected']);
+
 export function useDocuments(page = 1, pageSize = 20) {
   return useQuery<DocumentListResponse>({
     queryKey: makeTenantQueryKey(ORG_ID, 'documents', 'list', page, pageSize),
@@ -27,6 +29,13 @@ export function useDocument(id: string) {
     queryKey: makeTenantQueryKey(ORG_ID, 'documents', 'detail', id),
     queryFn: () => getDocument(id),
     enabled: !!id,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (!status || TERMINAL_STATUSES.has(status)) {
+        return false;
+      }
+      return 2000;
+    },
   });
 }
 

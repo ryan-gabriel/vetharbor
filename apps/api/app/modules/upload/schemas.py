@@ -25,6 +25,22 @@ class DocumentUploadResponse(BaseModel):
     created_at: datetime | None
 
 
+class EntityOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID | None = None
+    label: str
+    text: str
+    normalised: str | None = None
+    taxonomy: str | None = None
+    confidence: float | None = None
+    char_start: int
+    char_end: int
+    rule_id: str | None = None
+    source: str
+    is_pii: bool = False
+
+
 class DocumentDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -40,6 +56,7 @@ class DocumentDetail(BaseModel):
     char_count: int
     word_count: int
     warning_flags: list[str]
+    entities: list[EntityOut] = []
     created_at: datetime | None
     updated_at: datetime | None
 

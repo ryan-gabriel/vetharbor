@@ -94,7 +94,21 @@ class DocumentRepository:
             {"id": document_id, "org_id": org_id},
         )
         row = result.mappings().first()
-        return dict(row) if row else None
+        if row is None:
+            return None
+        doc = dict(row)
+        # Fetch entities.
+        ent_result = await self._session.execute(
+            text(
+                "SELECT id, label, text, normalised, taxonomy, confidence, "
+                "char_start, char_end, rule_id, source, is_pii "
+                "FROM document_entities WHERE document_id = :id "
+                "AND org_id = :org_id ORDER BY char_start"
+            ),
+            {"id": document_id, "org_id": org_id},
+        )
+        doc["entities"] = [dict(r) for r in ent_result.mappings().all()]
+        return doc
 
     async def list_for_org(
         self, org_id: uuid.UUID, page: int = 1, page_size: int = 20

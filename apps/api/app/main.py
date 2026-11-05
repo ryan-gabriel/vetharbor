@@ -14,6 +14,7 @@ from app.core.config import Profile, Settings, get_settings
 from app.core.errors import register_error_handlers
 from app.core.logging import CorrelationMiddleware
 from app.modules.auth.router import router as auth_router
+from app.modules.outbox.router import router as outbox_router
 from app.modules.rag.router import router as rag_router
 from app.modules.scoring.router import router as scoring_router
 from app.modules.upload.router import router as upload_router
@@ -56,6 +57,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     api = "/api/v1"
     app.include_router(auth_router, prefix=api)
     app.include_router(upload_router, prefix=api)
+    app.include_router(outbox_router, prefix=api)
     app.include_router(scoring_router, prefix=api)
     app.include_router(rag_router, prefix=api)
 

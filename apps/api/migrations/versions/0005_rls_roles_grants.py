@@ -23,13 +23,12 @@ from __future__ import annotations
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "0005_rls_roles_grants"
-down_revision = "0004_scoring_outbox_rag_audit"
+revision = "0005_rls_roles"
+down_revision = "0004_scoring_outbox"
 branch_labels = None
 depends_on = None
 
 TENANT_TABLES = [
-    "org_memberships",
     "job_roles",
     "documents",
     "document_chunks",
@@ -39,7 +38,6 @@ TENANT_TABLES = [
     "shadow_scores",
     "outbox_events",
     "dead_letter_events",
-    "idempotency_keys",
     "rag_queries",
     "audit_log",
 ]

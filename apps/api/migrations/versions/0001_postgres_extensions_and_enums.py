@@ -16,7 +16,7 @@ from __future__ import annotations
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "0001_postgres_extensions_and_enums"
+revision = "0001_ext_enums"
 down_revision = None
 branch_labels = None
 depends_on = None

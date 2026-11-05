@@ -20,7 +20,7 @@ from __future__ import annotations
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "0003_documents_chunks_entities"
+revision = "0003_docs_chunks"
 down_revision = "0002_core_tables"
 branch_labels = None
 depends_on = None

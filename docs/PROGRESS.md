@@ -52,7 +52,8 @@ For current state, locked decisions and the verification register, see `CONTEXT.
 
 ## In progress
 
-- M1-1 — Schema + RLS: Alembic migrations 0001–0005 committed; schema/RLS/integration tests added; CI integration job added. Not yet: local CI-style integration run against real Postgres (Docker unavailable on this host right now), `docs/schema.sql` snapshot.
+- M1-1 — Schema + RLS: done. 5 migrations, 7 integration tests passing, CI integration job.
+- M1-2 — Upload → extraction → NLP → store: in progress. Upload service, MIME detection, sandboxed extraction (PDF/DOCX/TXT), SHA-256, warning flags, read-only demo rejection, typed errors, FastAPI endpoints, 7 upload tests passing. Remaining: NLP entity extraction (spaCy), React upload/list/detail UI, cross-tenant isolation tests.
 
 ## What to do next (M1 Core MVP)
 

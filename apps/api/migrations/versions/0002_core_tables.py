@@ -18,7 +18,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "0002_core_tables"
-down_revision = "0001_postgres_extensions_and_enums"
+down_revision = "0001_ext_enums"
 branch_labels = None
 depends_on = None
 

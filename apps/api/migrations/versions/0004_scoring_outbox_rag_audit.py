@@ -17,8 +17,8 @@ from __future__ import annotations
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "0004_scoring_outbox_rag_audit"
-down_revision = "0003_documents_chunks_entities"
+revision = "0004_scoring_outbox"
+down_revision = "0003_docs_chunks"
 branch_labels = None
 depends_on = None
 
@@ -134,7 +134,7 @@ def upgrade() -> None:
         """
         CREATE TABLE dead_letter_events (
             id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-            event_id uuid NOT NULL UNIQUE REFERENCES outbox_events,
+            event_id uuid NOT NULL UNIQUE REFERENCES outbox_events (event_id),
             org_id uuid NOT NULL,
             reason text NOT NULL,
             last_error text,
@@ -150,7 +150,7 @@ def upgrade() -> None:
     op.execute(
         """
         CREATE TABLE idempotency_keys (
-            event_id uuid PRIMARY KEY REFERENCES outbox_events ON DELETE CASCADE,
+            event_id uuid PRIMARY KEY REFERENCES outbox_events (event_id) ON DELETE CASCADE,
             consumer text NOT NULL,
             result_status text NOT NULL,
             result_ref jsonb,

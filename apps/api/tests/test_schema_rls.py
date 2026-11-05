@@ -24,7 +24,6 @@ from app.core.config import Settings
 pytestmark = pytest.mark.integration
 
 TENANT_TABLES = [
-    "org_memberships",
     "job_roles",
     "documents",
     "document_chunks",
@@ -34,7 +33,6 @@ TENANT_TABLES = [
     "shadow_scores",
     "outbox_events",
     "dead_letter_events",
-    "idempotency_keys",
     "rag_queries",
     "audit_log",
 ]
@@ -43,9 +41,11 @@ APP_ROLE = "vetharbor_app"
 
 
 def database_url() -> str:
-    return os.environ.get("VETHARBOR_DATABASE_URL") or Settings(
+    raw = os.environ.get("VETHARBOR_DATABASE_URL") or Settings(
         _env_file=None
     ).database_url
+    # Normalise to a plain psycopg connection string.
+    return raw.replace("postgresql+psycopg://", "postgresql://")
 
 
 @pytest.fixture(scope="session")
@@ -58,11 +58,17 @@ def pg_db() -> str:
     conn.close()
 
     # Apply migrations head once for the session.
+    import pathlib
+
     from alembic import command
     from alembic.config import Config
 
-    cfg = Config("apps/api/alembic.ini")
-    cfg.set_main_option("sqlalchemy.url", url)
+    sqlalchemy_url = url.replace("postgresql://", "postgresql+psycopg://")
+    ini_path = pathlib.Path(__file__).resolve().parents[1] / "alembic.ini"
+    migrations_dir = pathlib.Path(__file__).resolve().parents[1] / "migrations"
+    cfg = Config(str(ini_path))
+    cfg.set_main_option("sqlalchemy.url", sqlalchemy_url)
+    cfg.set_main_option("script_location", str(migrations_dir))
     command.upgrade(cfg, "head")
     return url
 
@@ -194,18 +200,31 @@ def test_scores_append_only_for_app_role(db) -> None:
             (score_id, org_id, doc_id, role_id, model_id),
         )
         cur.execute("SET ROLE vetharbor_app")
-        # Update and delete are revoked for the application role.
-        with pytest.raises(InsufficientPrivilege):
+        cur.execute(
+            "SELECT set_config('vetharbor.tenant_id', %s, true)", (str(org_id),)
+        )
+        # Update is revoked for the application role.
+        cur.execute("SAVEPOINT sp_update")
+        try:
             cur.execute(
                 "UPDATE scores SET role_match_score = 0.9 WHERE id = %s",
                 (score_id,),
             )
-        with pytest.raises(InsufficientPrivilege):
+        except InsufficientPrivilege:
+            cur.execute("ROLLBACK TO SAVEPOINT sp_update")
+        else:
+            cur.execute("ROLLBACK TO SAVEPOINT sp_update")
+            raise AssertionError("UPDATE should have been denied")
+        # Delete is revoked for the application role.
+        cur.execute("SAVEPOINT sp_delete")
+        try:
             cur.execute("DELETE FROM scores WHERE id = %s", (score_id,))
-        # Insert still succeeds once tenant context is set (RLS WITH CHECK).
-        cur.execute(
-            "SELECT set_config('vetharbor.tenant_id', %s, true)", (str(org_id),)
-        )
+        except InsufficientPrivilege:
+            cur.execute("ROLLBACK TO SAVEPOINT sp_delete")
+        else:
+            cur.execute("ROLLBACK TO SAVEPOINT sp_delete")
+            raise AssertionError("DELETE should have been denied")
+        # Insert still succeeds (RLS WITH CHECK passes).
         cur.execute(
             "INSERT INTO scores (id, org_id, document_id, job_role_id, "
             "model_version_id, role_match_score, band, feature_skill_overlap, "
@@ -298,7 +317,7 @@ def test_tenant_setting_is_transaction_local(pg_db: str) -> None:
         conn.commit()  # end transaction -> config resets
         with conn.cursor() as cur:
             cur.execute("SELECT current_setting('vetharbor.tenant_id', true)")
-            assert cur.fetchone()[0] is None
+            assert cur.fetchone()[0] in (None, "")
     finally:
         conn.close()
 

@@ -53,7 +53,9 @@ For current state, locked decisions and the verification register, see `CONTEXT.
 ## In progress
 
 - M1-1 — Schema + RLS: done. 5 migrations, 7 integration tests passing, CI integration job.
-- M1-2 — Upload → extraction → NLP → store: in progress. Upload service, MIME detection, sandboxed extraction (PDF/DOCX/TXT), SHA-256, warning flags, read-only demo rejection, typed errors, FastAPI endpoints, 7 upload tests passing. Remaining: NLP entity extraction (spaCy), React upload/list/detail UI, cross-tenant isolation tests.
+- M1-2 — Upload → extraction → NLP → store: done. Upload service, MIME detection, sandboxed extraction (PDF/DOCX/TXT), SHA-256, warning flags, read-only demo rejection, typed errors, FastAPI endpoints, NLP entity extraction (spaCy + gazetteer, 7 entity types, offsets, PII detection), entity persistence in same transaction. 7 upload + 7 NLP tests. 60 total tests green.
+- M1-3 — NLP entities: done (integrated into M1-2). spaCy Matcher + EntityRuler + PhraseMatcher, skills gazetteer (40+ skills), role titles, education keywords, years, dates, contact (PII), deduplication, offset validation.
+- Next: M1-5 (cross-tenant isolation tests), M1-6 (React upload/list/detail UI), M1-7 (lite deployment), `docs/schema.sql` snapshot.
 
 ## What to do next (M1 Core MVP)
 

@@ -1,8 +1,9 @@
-"""Upload service — validation, extraction, persistence, outbox event."""
+"""Upload service — validation, extraction, NLP, persistence, outbox event."""
 
 from __future__ import annotations
 
 import json
+import uuid
 from typing import Any
 
 from app.core.auth import TenantContext
@@ -15,14 +16,10 @@ from app.core.mime import (
     is_allowed_mime,
     is_archive_or_macro,
 )
+from app.modules.nlp.repository import EntityRepository
+from app.modules.nlp.service import NLPService
 from app.modules.upload.repository import DocumentRepository
 from app.persistence.db import Database
-
-ALLOWED_MIME_TYPES = {
-    "application/pdf",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "text/plain",
-}
 
 
 def _make_error(code: str, message: str) -> AppError:
@@ -103,7 +100,11 @@ class UploadService:
                 raise _make_error("server", "Extraction timed out.") from exc
             raise _make_error("server", "Text extraction failed.") from exc
 
-        # 8. Persist document + outbox event in one transaction.
+        # 8. Run NLP on extracted text.
+        nlp = NLPService()
+        nlp_result = nlp.process(result.text)
+
+        # 9. Persist document + entities + outbox event in one transaction.
         async with self._db.tenant_session(
             tenant_id=tenant.tenant_id,
             user_id=tenant.user_id,
@@ -126,9 +127,29 @@ class UploadService:
                 uploaded_by=tenant.user_id,
                 status="ready",
             )
+            # Persist entities.
+            entity_repo = EntityRepository(session)
+            entity_dicts = [
+                {
+                    "label": e.label,
+                    "text": e.text,
+                    "normalised": e.normalised,
+                    "taxonomy": e.taxonomy,
+                    "confidence": e.confidence,
+                    "char_start": e.char_start,
+                    "char_end": e.char_end,
+                    "rule_id": e.rule_id,
+                    "source": e.source,
+                    "is_pii": e.is_pii,
+                }
+                for e in nlp_result.entities
+            ]
+            await entity_repo.create_batch(
+                document_id=uuid.UUID(str(doc["id"])),
+                org_id=tenant.tenant_id,
+                entities=entity_dicts,
+            )
             # Outbox event in same transaction.
-            import uuid as _uuid
-
             from sqlalchemy import text as sa_text
 
             await session.execute(
@@ -140,7 +161,7 @@ class UploadService:
                     "now(), :correlation_id)"
                 ),
                 {
-                    "event_id": _uuid.uuid4(),
+                    "event_id": uuid.uuid4(),
                     "org_id": tenant.tenant_id,
                     "aggregate_id": doc["id"],
                     "payload": json.dumps(
@@ -149,6 +170,7 @@ class UploadService:
                     "correlation_id": None,
                 },
             )
+            doc["entity_count"] = len(entity_dicts)
             return doc
 
 
@@ -156,12 +178,9 @@ def _sanitize_filename(filename: str) -> str:
     """Sanitize filename for display only. Strip path components and dangerous chars."""
     import os
 
-    # Strip any path components.
     name = os.path.basename(filename)
-    # Remove null bytes and control chars.
     name = name.replace("\x00", "")
     name = "".join(c for c in name if c.isprintable() or c in " -_.")
-    # Truncate to reasonable length.
     if len(name) > 255:
         name = name[:255]
     if not name:

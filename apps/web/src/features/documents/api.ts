@@ -22,6 +22,7 @@ export interface DocumentSummary {
 
 export interface DocumentDetail extends DocumentSummary {
   extracted_text: string;
+  entities: EntityOut[];
 }
 
 export interface DocumentListResponse {

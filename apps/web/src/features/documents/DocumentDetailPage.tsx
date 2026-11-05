@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router';
 import { useDocument } from './hooks';
 import { ErrorNotice } from '@/components/ErrorNotice';
+import { EvidenceRail } from '@/components/EvidenceRail';
 import { WakingUp } from '@/components/WakingUp';
 import { ApiError } from '@/lib/api';
 
@@ -62,12 +63,7 @@ export function DocumentDetailPage() {
           </pre>
         </section>
 
-        <aside aria-label="Entities" className="rounded-md border border-hairline bg-sheet p-6">
-          <h2 className="font-display text-h2 text-ink">Entities</h2>
-          <p className="mt-2 text-small text-ink-muted">
-            Entity evidence arrives with the NLP pipeline (M1-3).
-          </p>
-        </aside>
+        <EvidenceRail entities={data.entities} />
       </div>
     </>
   );

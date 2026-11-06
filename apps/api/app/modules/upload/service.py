@@ -64,9 +64,7 @@ class UploadService:
         if detected is None:
             raise _make_error("not_found", "Unsupported file type.")
 
-        if is_archive_or_macro(detected, filename) or is_archive_or_macro(
-            declared_mime, filename
-        ):
+        if is_archive_or_macro(detected, filename) or is_archive_or_macro(declared_mime, filename):
             raise _make_error("not_found", "Archives and macro-enabled files are not allowed.")
 
         # 4. MIME allow-list + declared/detected agreement.
@@ -164,9 +162,7 @@ class UploadService:
                     "event_id": uuid.uuid4(),
                     "org_id": tenant.tenant_id,
                     "aggregate_id": doc["id"],
-                    "payload": json.dumps(
-                        {"document_id": str(doc["id"]), "kind": resolved_kind}
-                    ),
+                    "payload": json.dumps({"document_id": str(doc["id"]), "kind": resolved_kind}),
                     "correlation_id": None,
                 },
             )

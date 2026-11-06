@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -29,6 +30,40 @@ MAX_BYTES = 400_000
 
 
 def _tracked_text_files() -> list[Path]:
+    """Only files git would publish. A local, git-ignored ``.env`` holding a real
+    key is not a repo leak, and scanning it would fail this guard for the
+    correct reason at the wrong time (AGENTS.md §3.4)."""
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        # No git binary: fall back to the directory walk, erring on the side
+        # of scanning more rather than less.
+        return _walk_text_files()
+
+    files: list[Path] = []
+    for name in out.split("\0"):
+        if not name:
+            continue
+        path = REPO_ROOT / name
+        if path.name in SKIP_FILES:
+            continue
+        try:
+            if path.stat().st_size > MAX_BYTES:
+                continue
+            path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        files.append(path)
+    return files
+
+
+def _walk_text_files() -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(REPO_ROOT):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]

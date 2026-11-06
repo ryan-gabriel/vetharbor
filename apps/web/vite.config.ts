@@ -13,6 +13,9 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // Hermetic: a developer's git-ignored apps/web/.env.local must not change
+    // what these tests assert. Suites that need a base URL stub it themselves.
+    env: { VITE_API_URL: "" },
     // WSL1 + Windows mounts make fork workers time out; threads are reliable.
     pool: "threads",
     setupFiles: ["./src/test/setup.ts"],

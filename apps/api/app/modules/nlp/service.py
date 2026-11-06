@@ -275,7 +275,7 @@ class NLPService:
                 f"invalid offset: {e.char_start}-{e.char_end} for text len {len(text)}"
             )
             assert text[e.char_start : e.char_end] == e.text, (
-                f"offset mismatch: expected {e.text!r}, got {text[e.char_start:e.char_end]!r}"
+                f"offset mismatch: expected {e.text!r}, got {text[e.char_start : e.char_end]!r}"
             )
 
         return NLPResult(entities=entities)

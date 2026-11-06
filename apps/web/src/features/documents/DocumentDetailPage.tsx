@@ -1,13 +1,13 @@
-import { useParams, Link } from 'react-router';
-import { useDocument } from './hooks';
-import { ErrorNotice } from '@/components/ErrorNotice';
-import { EvidenceRail } from '@/components/EvidenceRail';
-import { WakingUp } from '@/components/WakingUp';
-import { ApiError } from '@/lib/api';
+import { useParams, Link } from "react-router";
+import { useDocument } from "./hooks";
+import { ErrorNotice } from "@/components/ErrorNotice";
+import { EvidenceRail } from "@/components/EvidenceRail";
+import { WakingUp } from "@/components/WakingUp";
+import { ApiError } from "@/lib/api";
 
 export function DocumentDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError, error } = useDocument(id ?? '');
+  const { data, isLoading, isError, error } = useDocument(id ?? "");
 
   if (isLoading) {
     return (
@@ -18,12 +18,15 @@ export function DocumentDetailPage() {
   }
 
   if (isError) {
-    const code = error instanceof ApiError ? error.code : 'server';
-    if (code === 'waking_up') return <WakingUp />;
+    const code = error instanceof ApiError ? error.code : "server";
+    if (code === "waking_up") return <WakingUp />;
     return (
       <div className="space-y-4">
         <h1 className="font-display text-h1 text-ink">Document not found</h1>
-        <ErrorNotice code={code} correlationId={error instanceof ApiError ? error.correlationId : null} />
+        <ErrorNotice
+          code={code}
+          correlationId={error instanceof ApiError ? error.correlationId : null}
+        />
         <Link to="/" className="text-brand underline">
           Back to documents
         </Link>
@@ -51,12 +54,15 @@ export function DocumentDetailPage() {
 
       {data.warning_flags.length > 0 && (
         <div className="mt-4 rounded-md border border-caution bg-caution-soft p-3 text-small text-caution">
-          Warnings: {data.warning_flags.join(', ')}
+          Warnings: {data.warning_flags.join(", ")}
         </div>
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <section aria-label="Document text" className="rounded-md border border-hairline bg-sheet p-6">
+        <section
+          aria-label="Document text"
+          className="rounded-md border border-hairline bg-sheet p-6"
+        >
           <h2 className="font-display text-h2 text-ink">Extracted text</h2>
           <pre className="mt-4 whitespace-pre-wrap font-sans text-body text-ink">
             {data.extracted_text}

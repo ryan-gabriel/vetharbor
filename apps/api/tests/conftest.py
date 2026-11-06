@@ -32,9 +32,8 @@ def app(settings: Settings):  # type: ignore[no-untyped-def]
     return create_app(settings)
 
 
-@pytest.fixture
-async def client(app) -> httpx.AsyncClient:  # type: ignore[no-untyped-def]
-    # Ensure the dev tenant and user exist in the database.
+def _seed_dev_tenant() -> None:
+    """Insert the dev tenant/user/membership if the database is reachable."""
     import psycopg
 
     db_url = "postgresql://vetharbor:vetharbor@localhost:55432/vetharbor"
@@ -57,12 +56,31 @@ async def client(app) -> httpx.AsyncClient:  # type: ignore[no-untyped-def]
             (DEV_TENANT_ID, DEV_USER_ID),
         )
         # Clean up documents from previous test runs.
-        conn.execute(
-            "DELETE FROM documents WHERE org_id = %s", (DEV_TENANT_ID,)
-        )
+        conn.execute("DELETE FROM documents WHERE org_id = %s", (DEV_TENANT_ID,))
         conn.close()
     except Exception:
         pass
+
+
+@pytest.fixture
+async def client(app) -> httpx.AsyncClient:  # type: ignore[no-untyped-def]
+    _seed_dev_tenant()
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
+
+
+@pytest.fixture
+def client_factory():  # type: ignore[no-untyped-def]
+    """Build a client from a non-default environment (e.g. ``prod``).
+
+    Needed to prove a deployment ignores the dev tenant header.
+    """
+    _seed_dev_tenant()
+
+    async def _make(*, environment: str = "test", **overrides: object) -> httpx.AsyncClient:
+        settings = Settings(_env_file=None, environment=environment, **overrides)  # type: ignore[arg-type]
+        transport = httpx.ASGITransport(app=create_app(settings))
+        return httpx.AsyncClient(transport=transport, base_url="http://test")
+
+    return _make

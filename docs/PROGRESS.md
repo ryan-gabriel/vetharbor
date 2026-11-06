@@ -50,35 +50,46 @@ For current state, locked decisions and the verification register, see `CONTEXT.
 
 ---
 
-## In progress
+## M1 Core MVP — code complete (5 Nov 2026), deployment pending
 
-- M1-1 — Schema + RLS: done. 5 migrations, 7 integration tests passing, CI integration job.
-- M1-2 — Upload → extraction → NLP → store: done. Upload service, MIME detection, sandboxed extraction (PDF/DOCX/TXT), SHA-256, warning flags, read-only demo rejection, typed errors, FastAPI endpoints, NLP entity extraction (spaCy + gazetteer, 7 entity types, offsets, PII detection), entity persistence in same transaction. 7 upload + 7 NLP tests. 60 total tests green.
-- M1-3 — NLP entities: done (integrated into M1-2). spaCy Matcher + EntityRuler + PhraseMatcher, skills gazetteer (40+ skills), role titles, education keywords, years, dates, contact (PII), deduplication, offset validation.
-- Next: M1-5 (cross-tenant isolation tests), M1-6 (React upload/list/detail UI), M1-7 (lite deployment), `docs/schema.sql` snapshot.
+### Code
+- **M1-1 Schema + RLS** — Alembic `0001`–`0005` (extensions/enums, core tables, documents/chunks/entities, scoring/outbox/rag/audit, RLS+roles+grants). `ENABLE` + `FORCE ROW LEVEL SECURITY` on every tenant table except the `org_memberships` bootstrap read and `idempotency_keys` (no `org_id`). `docs/schema.sql` snapshot committed.
+- **M1-2 Upload → extraction → NLP → store** — MIME magic-byte allow-list, 5 MB / 60-page limits, sandboxed subprocess extraction (PDF, DOCX, TXT), SHA-256, warning flags, typed errors, list/detail endpoints. spaCy + gazetteer entity extraction persisted in the same transaction.
+- **M1-4 Outbox** — bounded drain with `SKIP LOCKED`, idempotency check, 3-attempt DLQ, `POST /api/v1/outbox/drain`.
+- **M1-5 Isolation** — 4 cross-tenant tests, including a direct-SQL zero-row proof under the `vetharbor_app` role.
+- **M1-6 React UI** — document list/detail, `UploadDropzone`, `EvidenceRail`, tenant-scoped query keys, bounded status polling that stops on a terminal state, a11y tests for the new components.
+- **Gemini adapter** — real `GeminiEmbeddings`/`GeminiLLM` behind the existing provider interfaces; `tools=[]` always, 768-d validated and normalised, model ids and key read from `Settings`. Fake providers remain the CI default.
 
-## What to do next (M1 Core MVP)
+### Gates (all green)
+- ruff check + ruff format --check: pass (53 files)
+- mypy --strict: pass (38 files)
+- eslint + prettier --check: pass
+- tsc -b: pass
+- pytest: **72 passed**
+- vitest: **28 passed**
+- npm run build: pass
 
-### Task 1 — Schema + RLS (blocks everything else)
-- Alembic migration: `org_id uuid not null` on every tenant-scoped table
-- `ENABLE` + `FORCE ROW LEVEL SECURITY` on every tenant table
-- Standard policy from `DATA_MODEL.md` §4.2
-- `scores` and `audit_log` append-only (revoke update/delete from `vetharbor_app`)
-- Enums as Postgres enum types
-- `vector(768)` embedding columns
+### Gemini verification (live free-tier key, 5 Nov 2026)
+- `gemini-embedding-2` → 768-d unit vector; `gemini-embedding-001` → 768-d unit vector
+- `gemini-2.5-flash` → 404 for new accounts; `gemini-3.8-flash` / `gemini-flash-latest` → 503
+- `gemini-3.1-flash-lite` → answered, honoured `response_json_schema`
 
-### Task 2 — Upload → extraction → NLP → store
-- MIME + magic bytes validation, size/page limits (5 MB, 60 pages)
-- Sandboxed text extraction (subprocess with CPU/mem/wall limits)
-- spaCy Matcher/EntityRuler + skills gazetteer
-- Entity highlights with char offsets
+### Still to do for M1 to close
+- **M1-7 deployment** — Neon + Render + Vercel + Auth0 (needs the owner's cloud consoles), then seed and flip `demo_state.is_readonly_mode`.
+- **`scripts/seed.py` insert path** — still dry-run only, so a deployed demo would have no documents.
+- Reconcile `docs/TASKS.md` with the completed M1 rows.
 
-### Task 3 — React upload/list/detail + F7 cross-tenant test
-- UploadDropzone (disabled server-side in read-only demo)
-- DocumentSheet + EvidenceRail two-pane spread
-- Tenant-scoped TanStack Query keys
-- `test_cross_tenant_read_returns_no_rows` proving isolation
-- Deploy lite profile to Vercel+Render+Neon at end of M1
+---
+
+## What to do next
+
+### M1-7 — Lite deployment
+1. Neon project; run `alembic upgrade head` from a developer machine.
+2. Render web service: `PROFILE=lite`, `ENVIRONMENT=prod`, `VETHARBOR_DATABASE_URL`, `GEMINI_API_KEY`.
+3. Vercel project pointing at the Render URL via `VITE_API_URL`.
+4. Auth0 SPA + API; issuer/audience onto Render.
+5. Seed the synthetic corpus, set `demo_state.is_readonly_mode = true`.
+6. Prove upload is refused server-side on the deployed URL; screenshot the 403.
 
 ### Not in M1
 RAG, Spring orchestrator, Helm, Mongo, Quarto — [T1]-later or [T2]

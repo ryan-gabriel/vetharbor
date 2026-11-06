@@ -1,8 +1,8 @@
-import { useDocuments } from './hooks';
-import { ErrorNotice } from '@/components/ErrorNotice';
-import { WakingUp } from '@/components/WakingUp';
-import { ApiError } from '@/lib/api';
-import { Link } from 'react-router';
+import { useDocuments } from "./hooks";
+import { ErrorNotice } from "@/components/ErrorNotice";
+import { WakingUp } from "@/components/WakingUp";
+import { ApiError } from "@/lib/api";
+import { Link } from "react-router";
 
 export function DocumentListPage() {
   const { data, isLoading, isError, error } = useDocuments();
@@ -17,15 +17,17 @@ export function DocumentListPage() {
   }
 
   if (isError) {
-    const code =
-      error instanceof ApiError ? error.code : 'server';
-    if (code === 'waking_up') {
+    const code = error instanceof ApiError ? error.code : "server";
+    if (code === "waking_up") {
       return <WakingUp />;
     }
     return (
       <div className="space-y-4">
         <h1 className="font-display text-h1 text-ink">Documents</h1>
-        <ErrorNotice code={code} correlationId={error instanceof ApiError ? error.correlationId : null} />
+        <ErrorNotice
+          code={code}
+          correlationId={error instanceof ApiError ? error.correlationId : null}
+        />
       </div>
     );
   }
@@ -36,7 +38,7 @@ export function DocumentListPage() {
     <>
       <h1 className="font-display text-h1 text-ink">Documents</h1>
       <p className="mt-2 max-w-measure text-body text-ink-secondary">
-        Two seeded synthetic tenants prove tenant isolation. Upload is demonstrated locally with{' '}
+        Two seeded synthetic tenants prove tenant isolation. Upload is demonstrated locally with{" "}
         <code className="font-mono text-small">make dev</code> and in the recorded walkthrough.
       </p>
 
@@ -61,9 +63,7 @@ export function DocumentListPage() {
               <p className="mt-1 text-small text-ink-secondary">
                 {doc.char_count} chars · {doc.word_count} words
                 {doc.warning_flags.length > 0 && (
-                  <span className="ml-2 text-caution">
-                    ⚠ {doc.warning_flags.join(', ')}
-                  </span>
+                  <span className="ml-2 text-caution">⚠ {doc.warning_flags.join(", ")}</span>
                 )}
               </p>
             </li>

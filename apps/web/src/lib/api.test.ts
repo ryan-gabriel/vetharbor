@@ -50,6 +50,21 @@ describe("apiJson", () => {
     expect(seenHeaders?.get("Accept")).toBe("application/json");
   });
 
+  it("prefixes requests with the configured API base url", async () => {
+    let seenInput: URL | RequestInfo | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: URL | RequestInfo) => {
+        seenInput = input;
+        return Promise.resolve(new Response("{}", { status: 200 }));
+      }),
+    );
+    vi.stubEnv("VITE_API_URL", "https://api.example.test");
+
+    await apiJson("/documents");
+    expect(seenInput).toBe("https://api.example.test/documents");
+  });
+
   it("throws ApiError with code and correlation id from the envelope", async () => {
     const envelope = {
       error: { code: "read_only", message: "demo is read-only", correlation_id: "corr-9" },

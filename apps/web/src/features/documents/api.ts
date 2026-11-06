@@ -2,7 +2,7 @@
  * Document API functions. All HTTP goes through lib/api (AGENTS.md §9).
  */
 
-import { apiJson } from '@/lib/api';
+import { apiJson } from "@/lib/api";
 
 export interface DocumentSummary {
   id: string;
@@ -46,10 +46,7 @@ export interface EntityOut {
   is_pii: boolean;
 }
 
-export async function listDocuments(
-  page = 1,
-  pageSize = 20,
-): Promise<DocumentListResponse> {
+export async function listDocuments(page = 1, pageSize = 20): Promise<DocumentListResponse> {
   return apiJson<DocumentListResponse>(
     `/documents?page=${String(page)}&page_size=${String(pageSize)}`,
   );
@@ -59,17 +56,14 @@ export async function getDocument(id: string): Promise<DocumentDetail> {
   return apiJson<DocumentDetail>(`/documents/${id}`);
 }
 
-import { apiFetch } from '@/lib/api';
+import { apiFetch } from "@/lib/api";
 
-export async function uploadDocument(
-  file: File,
-  kind?: string,
-): Promise<DocumentSummary> {
+export async function uploadDocument(file: File, kind?: string): Promise<DocumentSummary> {
   const form = new FormData();
-  form.append('file', file);
-  if (kind) form.append('kind', kind);
-  const response = await apiFetch('/documents', {
-    method: 'POST',
+  form.append("file", file);
+  if (kind) form.append("kind", kind);
+  const response = await apiFetch("/documents", {
+    method: "POST",
     body: form,
   } as unknown as Parameters<typeof apiFetch>[1]);
   return (await response.json()) as DocumentSummary;

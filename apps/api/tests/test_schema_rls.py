@@ -41,9 +41,7 @@ APP_ROLE = "vetharbor_app"
 
 
 def database_url() -> str:
-    raw = os.environ.get("VETHARBOR_DATABASE_URL") or Settings(
-        _env_file=None
-    ).database_url
+    raw = os.environ.get("VETHARBOR_DATABASE_URL") or Settings(_env_file=None).database_url
     # Normalise to a plain psycopg connection string.
     return raw.replace("postgresql+psycopg://", "postgresql://")
 
@@ -85,9 +83,7 @@ def db(pg_db: str):
 
 
 def _set_tenant(cur, tenant_id: str) -> None:
-    cur.execute(
-        "SELECT set_config('vetharbor.tenant_id', %s, true)", (tenant_id,)
-    )
+    cur.execute("SELECT set_config('vetharbor.tenant_id', %s, true)", (tenant_id,))
 
 
 def _insert_org_user_role_doc(cur, org_id, user_id, role_id, doc_id, model_id) -> None:
@@ -129,8 +125,7 @@ def test_migration_head_applies(pg_db: str) -> None:
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT count(*) FROM information_schema.tables "
-                "WHERE table_schema = 'public'"
+                "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'"
             )
             assert cur.fetchone()[0] >= 15
     finally:
@@ -143,8 +138,8 @@ def test_every_tenant_table_has_rls(pg_db: str) -> None:
         with conn.cursor() as cur:
             for table in TENANT_TABLES:
                 cur.execute(
-                    "SELECT relrowsecurity, relforcerowsecurity FROM pg_class "
-                    "WHERE relname = %s", (table,)
+                    "SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname = %s",
+                    (table,),
                 )
                 row = cur.fetchone()
                 assert row is not None, f"table {table} missing"
@@ -200,9 +195,7 @@ def test_scores_append_only_for_app_role(db) -> None:
             (score_id, org_id, doc_id, role_id, model_id),
         )
         cur.execute("SET ROLE vetharbor_app")
-        cur.execute(
-            "SELECT set_config('vetharbor.tenant_id', %s, true)", (str(org_id),)
-        )
+        cur.execute("SELECT set_config('vetharbor.tenant_id', %s, true)", (str(org_id),))
         # Update is revoked for the application role.
         cur.execute("SAVEPOINT sp_update")
         try:
@@ -320,4 +313,3 @@ def test_tenant_setting_is_transaction_local(pg_db: str) -> None:
             assert cur.fetchone()[0] in (None, "")
     finally:
         conn.close()
-

@@ -117,9 +117,7 @@ class OutboxDrainService:
         result = await session.execute(query, params)
         return [dict(r) for r in result.mappings().all()]
 
-    async def _process_event(
-        self, session: AsyncSession, event: dict[str, Any]
-    ) -> None:
+    async def _process_event(self, session: AsyncSession, event: dict[str, Any]) -> None:
         """Process a single event. Idempotent: checks idempotency_keys first."""
         event_id = event["event_id"]
         # Check idempotency.
@@ -143,10 +141,7 @@ class OutboxDrainService:
 
     async def _mark_done(self, session: AsyncSession, event_pk: int) -> None:
         await session.execute(
-            text(
-                "UPDATE outbox_events SET status = 'done', completed_at = now() "
-                "WHERE id = :id"
-            ),
+            text("UPDATE outbox_events SET status = 'done', completed_at = now() WHERE id = :id"),
             {"id": event_pk},
         )
 

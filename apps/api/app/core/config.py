@@ -16,10 +16,11 @@ Profile = Literal["dev", "lite", "full"]
 #:   - ``gemini-2.5-flash``  -> 404 for new accounts
 #:   - ``gemini-3.8-flash``  -> 503 on every attempt
 #:   - ``gemini-3.1-flash-lite`` -> answered, honoured ``response_json_schema``
+#:   - ``gemini-3.5-flash-lite`` -> available and working
 #: Both ``gemini-embedding-2`` and ``gemini-embedding-001`` returned 768-d
 #: unit vectors. Re-check before changing these (CONTEXT.md §6).
 GEMINI_DEFAULT_EMBEDDING_MODEL = "gemini-embedding-2"
-GEMINI_DEFAULT_LLM_MODEL = "gemini-3.1-flash-lite"
+GEMINI_DEFAULT_LLM_MODEL = "gemini-3.5-flash-lite"
 
 
 class Settings(BaseSettings):
